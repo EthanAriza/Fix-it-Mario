@@ -6,9 +6,9 @@ using UnityEngine.SceneManagement;
 public class Game_Manager : MonoBehaviour
 {
     public TextMeshProUGUI timerText;
-    public float timer = 120f;
+    private float timer = 120f; 
 
-    void Update()
+    void Update() //simple timer that will reset the level upon reaching 0 + do an animation of the player character failing
     {
         timer -= Time.deltaTime;
         timerText.text = timer.ToString("0");
@@ -16,12 +16,12 @@ public class Game_Manager : MonoBehaviour
         if (timer <= 0)
         {
             timerText.text = "0";
-            Invoke(nameof(Endgame), 0.1f);
+            Invoke(nameof(Endgame), 1f); // Will call on the endgame function after a certain amount of time specified
         }
     }
 
-    void Endgame()
+    void Endgame() // takes the current scene and just resets
     {
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

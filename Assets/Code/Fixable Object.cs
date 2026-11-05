@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class FixableObject : MonoBehaviour
 {
-    public SpriteRenderer SR;
+    private SpriteRenderer SR;
     public bool Repaired = false;
-    public bool Istouching;
     private bool Canfix = false;
+    public Playermain Playerscript;
 
     void Start()
     {
@@ -14,12 +14,19 @@ public class FixableObject : MonoBehaviour
 
     void Update()
     {
-        if(Canfix && Input.GetKey(KeyCode.E))
+        if (Canfix && Input.GetKeyDown(KeyCode.E) && !Repaired)
+        {
             Repaired = true;
+            Playerscript.Fixed_items++;
+        }
         if (Repaired)
+        {
             SR.color = Color.orange;
+        }
         if (!Repaired)
+        {
             SR.color = Color.orangeRed;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

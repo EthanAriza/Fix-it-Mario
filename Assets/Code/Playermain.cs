@@ -19,63 +19,55 @@ public class Playermain : MonoBehaviour
     public bool canfix;
 
 
-    public float speed = 10;
-    public float jump = 5;
+    private float speed = 10;
+    private float jump = 10;
     public float gravity = 3;
     public bool isGrounded;
-   // public Transform groundCheck;
-    public bool facingleft = true;
-    public Rigidbody2D RB;
-    public SpriteRenderer SR;
-    public bool daeth = false;
-    public float Delay = 2;
+
+    private bool facingleft = true;
+    private Rigidbody2D RB;
+    private SpriteRenderer SR;
+    public bool death = false;
+    private float Delay = 2; // reusable delay time for invokes and such (CAREFUL WHEN CHANGING IT AFFECTS A FEW THINGS)
+
+    public Sprite[] playerSprites;
     
     public AudioSource AS;
-    public AudioClip FAK;
-    public AudioClip Track;
 
-    
-    
     void Start()
     {
-        
+        Goal.SetActive(false);
+        Fixed_items = 0;
         SR= GetComponent<SpriteRenderer>();
         RB= GetComponent<Rigidbody2D>();
-       //groundCheck= GetComponent<Transform>();
-       AS= GetComponent<AudioSource>();
+        AS= GetComponent<AudioSource>();
         
     }
 
     void Update()
     {
-        if (Fixed_items >= 3)
+        if (Fixed_items >= 3) // The player can exit when they do the bare minimum of three repairs
         {
             Goal.SetActive(true);
         }
-        //AS.clip = Track; 
-
         
-        //AS.Play();
-        
-        if (transform.position.y < -4)
+        if (transform.position.y < -4) //If the player falls they die (KEEP THE LEVELS ABOVE -4y)
         {
-
             Reset();
-
         }
         
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R)) //reset button
         {
-           // Invoke("Reset", Delay);
+           Invoke(nameof(Reset), Delay);
            Reset();
            
         }
        
-        if (daeth)  return;
+        if (death)  return;
         
-       Movement();
+        Movement();
         SR.flipX = facingleft;
-        SetState(state);    
+        SetState(state);
     }
 
     public void SetState(PlayerState PlayerSet)
@@ -84,29 +76,30 @@ public class Playermain : MonoBehaviour
 
         if (PlayerSet == PlayerState.Idle)
         {
-            SR.color = Color.blue;
+            SR.sprite = playerSprites[0];
+            SR.color = Color.white;
         }
 
         if (PlayerSet == PlayerState.Walking)
         {
-            SR.color = Color.green;
+            SR.sprite = playerSprites[2];
+            SR.color = Color.white;
         }
 
         if (PlayerSet == PlayerState.Hurt)
         {
-            SR.color = Color.yellow;
+            SR.color = Color.red;
         }
 
         if (PlayerSet == PlayerState.Jumping)
         {
-            SR.color = Color.magenta;
+            SR.sprite = playerSprites[1];
+            SR.color = Color.white;
         }
 
         if (PlayerSet == PlayerState.Dead)
         {
-            SR.color = Color.black;
-           // RB.gravityScale = 0;
-           //AS.PlayOneShot(FAK);
+            SR.color = Color.red;
         }
     }
 
@@ -127,6 +120,10 @@ public class Playermain : MonoBehaviour
             facingleft = true;
             state = PlayerState.Walking;
         }
+        else if (!isGrounded)
+        {
+            state = PlayerState.Jumping;
+        }
         else
         { 
             vel.x = 0;
@@ -135,16 +132,15 @@ public class Playermain : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-
             vel.y = jump;
             state = PlayerState.Jumping;
         }
         RB.linearVelocity = vel;
     }
 
-    public void NoMovement()
+    public void NoMovement() //halts
     {
-        daeth  = true;
+        death  = true;
         RB.linearVelocity = Vector2.zero;
         state = PlayerState.Dead;
     }
@@ -152,18 +148,18 @@ public class Playermain : MonoBehaviour
     {
         return isGrounded;
     }
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D other) //killboxes basically whenever you die to one u will turn red, stop ur movement via the dead state and then reset the level
     {  
         isGrounded = true;
         if (other.gameObject.CompareTag("Evil"))
         {
-            SR.color = Color.black;
+            SR.color = Color.red;
             NoMovement();
             Invoke("Reset", Delay);  
         }
         if (other.gameObject.CompareTag("Hazard"))
         {
-            SR.color = Color.black;
+            SR.color = Color.red;
             NoMovement();
             Invoke("Reset", Delay);
         }
@@ -173,13 +169,12 @@ public class Playermain : MonoBehaviour
         isGrounded = false;
     }
     
-    void Reset()
+    void Reset() //reset the scene the player is in
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other) //for the win con
     {
         if (other.gameObject.CompareTag("WinTile"))
         {
