@@ -6,12 +6,28 @@ using UnityEngine.SceneManagement;
 public class Game_Manager : MonoBehaviour
 {
     public TextMeshProUGUI timerText;
-    private float timer = 120f; 
+    public TextMeshProUGUI FixedText;
+    private float timer = 120f;
 
-    void Update() //simple timer that will reset the level upon reaching 0 + do an animation of the player character failing
+    public GameObject Goal;
+    public Playermain playerscript;
+
+    private void Start()
     {
+        Goal.SetActive(false);
+    }
+
+    void Update() //simple timer that will reset the level upon reaching 0 + do an animation of the player character failing ** ALSO DOES IT FOR FIXED ITEMS
+    {
+
+        if (Playermain.Fixed_items >= 3) // The player can exit when they do the bare minimum of three repairs
+        {
+            Goal.SetActive(true);
+        }
+
         timer -= Time.deltaTime;
         timerText.text = timer.ToString("0");
+        FixedText.text = Playermain.Fixed_items.ToString("0");
 
         if (timer <= 0)
         {

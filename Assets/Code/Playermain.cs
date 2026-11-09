@@ -12,15 +12,12 @@ public class Playermain : MonoBehaviour
         Jumping = 3,
         Dead = 4
     }
-    public GameObject Goal;
-    public int Fixed_items;
+    public static int Fixed_items;
     
     public PlayerState state = PlayerState.Idle;
-    public bool canfix;
-
 
     private float speed = 10;
-    private float jump = 10;
+    private float jump = 11;
     public float gravity = 3;
     public bool isGrounded;
 
@@ -34,10 +31,12 @@ public class Playermain : MonoBehaviour
     
     public AudioSource AS;
 
+    private void Awake()
+    {
+        Fixed_items = 0;
+    }
     void Start()
     {
-        Goal.SetActive(false);
-        Fixed_items = 0;
         SR= GetComponent<SpriteRenderer>();
         RB= GetComponent<Rigidbody2D>();
         AS= GetComponent<AudioSource>();
@@ -46,11 +45,6 @@ public class Playermain : MonoBehaviour
 
     void Update()
     {
-        if (Fixed_items >= 3) // The player can exit when they do the bare minimum of three repairs
-        {
-            Goal.SetActive(true);
-        }
-        
         if (transform.position.y < -4) //If the player falls they die (KEEP THE LEVELS ABOVE -4y)
         {
             Reset();
@@ -88,6 +82,7 @@ public class Playermain : MonoBehaviour
 
         if (PlayerSet == PlayerState.Hurt)
         {
+            //missing hurt sprite
             SR.color = Color.red;
         }
 
@@ -99,8 +94,10 @@ public class Playermain : MonoBehaviour
 
         if (PlayerSet == PlayerState.Dead)
         {
+            //missing dead sprite
             SR.color = Color.red;
         }
+        //missing repair state ** repair sprite in art folder already
     }
 
     public void Movement()

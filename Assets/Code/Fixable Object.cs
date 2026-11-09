@@ -17,7 +17,7 @@ public class FixableObject : MonoBehaviour
         if (Canfix && Input.GetKeyDown(KeyCode.E) && !Repaired)
         {
             Repaired = true;
-            Playerscript.Fixed_items++;
+            Playermain.Fixed_items++;
         }
         if (Repaired)
         {
